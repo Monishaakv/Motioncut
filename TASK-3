@@ -1,0 +1,86 @@
+from datetime import datetime
+
+class ExpenseManager:
+    def __init__(self):
+        self.expenses = []
+
+    def add_expense(self, amount, category, description):
+        self.expenses.append({
+            'amount': amount,
+            'category': category,
+            'description': description,
+            'date': datetime.now()  # Timestamp when expense was added
+        })
+
+    def get_total_expenses(self):
+        return sum(expense['amount'] for expense in self.expenses)
+
+    def get_monthly_summary(self, month):
+        monthly_expenses = [expense['amount'] for expense in self.expenses
+                            if expense['date'].month == month]
+        return sum(monthly_expenses)
+
+    def get_category_summary(self, category):
+        category_expenses = [expense['amount'] for expense in self.expenses
+                             if expense['category'].lower() == category.lower()]
+        return sum(category_expenses)
+
+
+class UserInterface:
+    def __init__(self, expense_manager):
+        self.expense_manager = expense_manager
+
+    def run(self):
+        while True:
+            print("\n=== Expense Tracker Menu ===")
+            print("1. Add Expense")
+            print("2. Monthly Summary")
+            print("3. Category-wise Summary")
+            print("4. Total Expenses")
+            print("5. Exit")
+
+            choice = input("Enter your choice: ")
+
+            if choice == '1':
+                self.add_expense()
+            elif choice == '2':
+                self.show_monthly_summary()
+            elif choice == '3':
+                self.show_category_summary()
+            elif choice == '4':
+                self.show_total_expenses()
+            elif choice == '5':
+                print("Exiting Expense Tracker. Goodbye!")
+                break
+            else:
+                print("Invalid choice. Please enter a valid option.")
+
+    def add_expense(self):
+        amount = float(input("Enter expense amount: "))
+        category = input("Enter expense category: ")
+        description = input("Enter expense description: ")
+        self.expense_manager.add_expense(amount, category, description)
+        print("Expense added successfully.")
+
+    def show_monthly_summary(self):
+        month = int(input("Enter month (1-12): "))
+        total_expenses = self.expense_manager.get_monthly_summary(month)
+        print(f"Total expenses for month {month}: ${total_expenses}")
+
+    def show_category_summary(self):
+        category = input("Enter category to summarize: ")
+        total_category_expenses = self.expense_manager.get_category_summary(category)
+        print(f"Total expenses for category '{category}': ${total_category_expenses}")
+
+    def show_total_expenses(self):
+        total_expenses = self.expense_manager.get_total_expenses()
+        print(f"Total expenses: ${total_expenses}")
+
+
+def main():
+    expense_manager = ExpenseManager()
+    user_interface = UserInterface(expense_manager)
+    user_interface.run()
+
+if __name__ == "__main__":
+    main()
